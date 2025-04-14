@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sigma Timmy Game</title>
+    <style>
+        body { 
+            text-align: center; 
+            font-family: Arial, sans-serif; 
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        #mainContainer {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        #buttons { 
+            margin: 20px;
+        }
+
+        button {
+            font-size: 20px;
+            padding: 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        #clickButton {
+            font-size: 50px;
+            padding: 30px;
+            margin-top: 50px;
+	    background-color: red;
+	    color: blue;
+        }
+
+        .price {
+            font-size: 16px;
+            color: #888;
+        }
+
+        #ppcCounter {
+            font-size: 24px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sigma Timmy Game</h1>
+    <p>Points: <span id="points">0</span></p>
+    <p>Multiplier: <span id="multiplier">1</span></p>
+
+    <div id="mainContainer">
+        <div id="buttons">
+            <button id="clickButton">Click Me!</button>
+            <p id="ppcCounter">0:ppc</p>
+            <button id="buyUpgradeButton">Buy Upgrade</button>
+            <span id="upgradePrice" class="price"></span><br>
+            <button id="rebirthButton">Rebirth</button>
+            <span id="rebirthPrice" class="price"></span><br>
+        </div>
+    </div>
+
+    <script>
+        class ClickerGame {
+            constructor() {
+                this.resetGame();
+            }
+
+            // Reset the game progress (points, multiplier, upgrades, rebirths)
+            resetGame() {
+                this.points = 0;
+                this.pointsPerClick = 1;
+                this.multiplier = 1;
+                this.upgrades = [
+                    { name: "Stick", cost: 500, increase: 3, bought: false },
+                    { name: "Dumbbell", cost: 1000, increase: 5, bought: false },
+                    { name: "Duck", cost: 3000, increase: 7, bought: false },
+                    { name: "Pumpkin", cost: 5000, increase: 10, bought: false },
+                    { name: "Book", cost: 7000, increase: 17, bought: false },
+                    { name: "Car", cost: 25000, increase: 20, bought: false },
+                    { name: "Popcorn Bucket", cost: 45000, increase: 45, bought: false },
+                    { name: "Heater", cost: 70000, increase: 67, bought: false },
+                    { name: "Toilet", cost: 170000, increase: 93, bought: false },
+                    { name: "Dead Tree", cost: 360000, increase: 130, bought: false },
+                    { name: "Pine Tree", cost: 500000, increase: 150, bought: false },
+                    { name: "Baby", cost: 720000, increase: 170, bought: false },
+                    { name: "Toddler", cost: 1000000, increase: 220, bought: false },
+                    { name: "Adult", cost: 1500000, increase: 267, bought: false },
+                    { name: "Refrigerator", cost: 2000000, increase: 437, bought: false },
+                    { name: "Old Car", cost: 3000000, increase: 678, bought: false },
+                    { name: "Rhino", cost: 5000000, increase: 967, bought: false },
+                    { name: "Ram", cost: 7000000, increase: 1476, bought: false },
+                    { name: "Oil Tank", cost: 9000000, increase: 1743, bought: false },
+                    { name: "House", cost: 11000000, increase: 2768, bought: false },
+                    { name: "Missile", cost: 15000000, increase: 6000, bought: false },
+                    { name: "Rocket", cost: 20000000, increase: 9652, bought: false },
+                    { name: "Factory", cost: 50000000, increase: 13965, bought: false },
+                    { name: "Tire", cost: 67000000, increase: 16000, bought: false },
+                    { name: "Row Boat", cost: 100000000, increase: 20000, bought: false },
+                    { name: "Sailboat", cost: 140000000, increase: 50000, bought: false },
+                    { name: "Ship", cost: 200000000, increase: 135000, bought: false },
+                    { name: "Pirate Ship", cost: 1000000000, increase: 200000, bought: false },
+                    { name: "Military Jeep", cost: 20000000000, increase: 300000, bought: false },
+                    { name: "Tank", cost: 60000000000, increase: 500000, bought: false },
+                    { name: "Tiger Tank", cost: 200000000000, increase: 500000, bought: false },
+                    { name: "Box", cost: 135000000000, increase: 700000, bought: false },
+                    { name: "Truck with Two Guns", cost: 700000000000, increase: 1000000, bought: false },
+                    { name: "Military Truck with Tank Gun", cost: 1000000000000, increase: 1000000, bought: false },
+                    { name: "Truck with Two Tank Guns", cost: 2000000000000, increase: 4000000, bought: false },
+                    { name: "Missile Truck", cost: 4000000000000, increase: 10000000, bought: false },
+                    { name: "Nuke Truck", cost: 20000000000000, increase: 35000000, bought: false },
+                    { name: "Chest", cost: 70000000000000, increase: 50000000, bought: false },
+                    { name: "Double Chest", cost: 300000000000000, increase: 70000000, bought: false },
+                    { name: "Double Decker Bus", cost: 1500000000000000, increase: 100000000, bought: false },
+                    { name: "House", cost: 1200000000000000, increase: 200000000, bought: false },
+                    { name: "House with Garage", cost: 17000000000000000, increase: 277000000, bought: false },
+                    { name: "Tow Truck", cost: 2000000000000000, increase: 450000000, bought: false }
+                ];
+
+                this.rebirths = [
+                    { name: "Human", cost: 10000, multiplier: 2, bought: false },
+                    { name: "Strong Man", cost: 200000, multiplier: 3, bought: false },
+                    { name: "Stronger Man", cost: 1200000, multiplier: 4, bought: false },
+                    { name: "Even Stronger Man", cost: 17000000, multiplier: 6, bought: false },
+                    { name: "Stronger Man 2", cost: 75000000, multiplier: 8, bought: false },
+                    { name: "Strong Man 3", cost: 300000000, multiplier: 12, bought: false },
+                    { name: "Car", cost: 1000000000, multiplier: 14, bought: false },
+                    { name: "Truck", cost: 7000000000, multiplier: 16, bought: false },
+                    { name: "Semi Truck", cost: 15000000000, multiplier: 24, bought: false },
+                    { name: "Racecar", cost: 45000000000, multiplier: 35, bought: false },
+                    { name: "F1 Car", cost: 65000000000, multiplier: 50, bought: false },
+                    { name: "Military Jeep", cost: 70000000000, multiplier: 65, bought: false },
+                    { name: "Tank", cost: 500000000000, multiplier: 125, bought: false },
+                    { name: "Tiger Tank", cost: 700000000000, multiplier: 150, bought: false },
+                    { name: "Super Tank", cost: 7000000000000, multiplier: 225, bought: false },
+                    { name: "Super Military Truck", cost: 40000000000000, multiplier: 300, bought: false },
+                    { name: "Super Truck with 3 Tank Guns", cost: 200000000000000, multiplier: 375, bought: false },
+                    { name: "Rail Gun Super Truck", cost: 700000000000000, multiplier: 450, bought: false }
+                ];
+            }
+
+            // Format large numbers with abbreviations (using K, M, B, T, Non, Dec)
+            formatNumber(num) {
+                if (num >= 1e33) return (num / 1e33).toFixed(1) + 'Dec'; // Decillion
+                if (num >= 1e30) return (num / 1e30).toFixed(1) + 'Non'; // Nonillion
+                if (num >= 1e12) return (num / 1e12).toFixed(1) + 'T';   // Trillion
+                if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';     // Billion
+                if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';     // Million
+                if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';     // Thousand
+                return num;
+            }
+
+            // Handle clicking the button
+            click() {
+                if (isNaN(this.points) || isNaN(this.pointsPerClick)) {
+                    console.error("Error: Points or Points per click is NaN");
+                    return;
+                }
+                this.points += this.pointsPerClick * this.multiplier;
+                this.updateDisplay();
+            }
+
+            // Buy an upgrade
+            buyUpgrade() {
+                const upgrade = this.getNextAvailableUpgrade();
+                if (upgrade && this.points >= upgrade.cost) {
+                    this.points -= upgrade.cost;
+                    this.pointsPerClick += upgrade.increase;
+                    upgrade.bought = true;
+                    this.updateDisplay();
+                    this.updateUpgradeButton();
+                } else {
+                    alert("You do not have enough points to buy this upgrade.");
+                }
+            }
+
+            // Get the next available upgrade
+            getNextAvailableUpgrade() {
+                return this.upgrades.find(upgrade => !upgrade.bought);
+            }
+
+            // Rebirth functionality (add multiplier from rebirth and reset points and upgrades)
+            rebirth() {
+                const rebirth = this.rebirths.find(r => !r.bought);
+                if (rebirth && this.points >= rebirth.cost) {
+                    this.points = 0; // Reset points after rebirth
+                    this.pointsPerClick = 1; // Reset points per click
+                    this.upgrades.forEach(upgrade => upgrade.bought = false); // Reset upgrades
+                    this.multiplier = rebirth.multiplier; // Set new multiplier from rebirth
+                    rebirth.bought = true;
+                    this.rebirths.shift(); // Remove the rebirth after buying it
+                    this.updateDisplay();
+                    this.updateUpgradeButton();
+                    this.updateRebirthButton();
+                } else {
+                    alert("You do not have enough points for a rebirth.");
+                }
+            }
+
+            // Update the display with current points and multiplier
+            updateDisplay() {
+                document.getElementById("points").textContent = this.formatNumber(this.points);
+                document.getElementById("multiplier").textContent = this.formatNumber(this.multiplier);
+                document.getElementById("ppcCounter").textContent = `${this.formatNumber(this.pointsPerClick * this.multiplier)}:ppc`;
+            }
+
+            // Update the upgrade button to show the next available upgrade and its price
+            updateUpgradeButton() {
+                const upgradeButton = document.getElementById("buyUpgradeButton");
+                const upgradePrice = document.getElementById("upgradePrice");
+                const upgrade = this.getNextAvailableUpgrade();
+                if (upgrade) {
+                    upgradeButton.textContent = `Buy ${upgrade.name}`;
+                    upgradePrice.textContent = `Cost: ${this.formatNumber(upgrade.cost)} points`;
+                } else {
+                    upgradeButton.textContent = "No more upgrades available!";
+                    upgradePrice.textContent = "";
+                }
+            }
+
+            // Update the rebirth button to show the next available rebirth and its price
+            updateRebirthButton() {
+                const rebirthButton = document.getElementById("rebirthButton");
+                const rebirthPrice = document.getElementById("rebirthPrice");
+                const rebirth = this.rebirths.find(r => !r.bought);
+                if (rebirth) {
+                    rebirthButton.textContent = `Rebirth: ${rebirth.name}`;
+                    rebirthPrice.textContent = `Cost: ${this.formatNumber(rebirth.cost)} points`;
+                } else {
+                    rebirthButton.textContent = "No more rebirths available!";
+                    rebirthPrice.textContent = "";
+                }
+            }
+        }
+
+        // Initialize game
+        const game = new ClickerGame();
+
+        // Set up event listeners
+        document.getElementById("clickButton").addEventListener("click", () => game.click());
+        document.getElementById("buyUpgradeButton").addEventListener("click", () => game.buyUpgrade());
+        document.getElementById("rebirthButton").addEventListener("click", () => game.rebirth());
+
+        // Initial display updates
+        game.updateDisplay();
+        game.updateUpgradeButton();
+        game.updateRebirthButton();
+    </script>
+</body>
+</html>
